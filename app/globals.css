@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 148 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 148 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 148 10% 10%;
+    --primary: 148 90% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 148 30% 96%;
+    --secondary-foreground: 148 50% 15%;
+    --muted: 148 20% 96%;
+    --muted-foreground: 148 10% 40%;
+    --accent: 148 30% 96%;
+    --accent-foreground: 148 50% 15%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 148 20% 90%;
+    --input: 148 20% 90%;
+    --ring: 148 90% 20%;
+    --radius: 0.5rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 148 10% 10%;
+    --sidebar-primary: 148 90% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 148 30% 96%;
+    --sidebar-accent-foreground: 148 50% 15%;
+    --sidebar-border: 148 20% 90%;
+    --sidebar-ring: 148 90% 20%;
+  }
+
+  .dark {
+    --background: 148 30% 10%;
+    --foreground: 148 10% 98%;
+    --card: 148 30% 10%;
+    --card-foreground: 148 10% 98%;
+    --popover: 148 30% 10%;
+    --popover-foreground: 148 10% 98%;
+    --primary: 148 90% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 148 30% 15%;
+    --secondary-foreground: 148 10% 98%;
+    --muted: 148 30% 15%;
+    --muted-foreground: 148 10% 60%;
+    --accent: 148 30% 15%;
+    --accent-foreground: 148 10% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 148 10% 98%;
+    --border: 148 30% 20%;
+    --input: 148 30% 20%;
+    --ring: 148 90% 20%;
+
+    /* Sidebar colors */
+    --sidebar-background: 148 30% 10%;
+    --sidebar-foreground: 148 10% 98%;
+    --sidebar-primary: 148 90% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 148 30% 15%;
+    --sidebar-accent-foreground: 148 10% 98%;
+    --sidebar-border: 148 30% 20%;
+    --sidebar-ring: 148 90% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .page-title {
+    @apply text-2xl font-bold text-brand-600 mb-2;
+  }
+
+  .page-description {
+    @apply text-muted-foreground mb-6;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-brand-500 mb-4;
+  }
+}
+
