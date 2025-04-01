@@ -1,70 +1,86 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import type { Branch, Vehicle } from "@/lib/supabase"
-import { fetchBranches } from "@/lib/api"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { ArrowLeft, Save } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { Branch, Vehicle } from "@/lib/supabase";
+import { fetchBranches } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { ArrowLeft, Save } from "lucide-react";
 
 interface VehicleFormProps {
-  initialData?: Partial<Vehicle>
-  onSubmit: (data: Partial<Vehicle>) => Promise<void>
-  submitLabel: string
+  initialData?: Partial<Vehicle>;
+  onSubmit: (data: Partial<Vehicle>) => Promise<boolean | void>;
+  submitLabel: string;
+  returnPath?: string;
 }
 
-export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }: VehicleFormProps) {
-  const router = useRouter()
-  const [branches, setBranches] = useState<Branch[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState<Partial<Vehicle>>(initialData)
+export default function VehicleForm({
+  initialData = {},
+  onSubmit,
+  submitLabel,
+  returnPath = "/dashboard",
+}: VehicleFormProps) {
+  const router = useRouter();
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<Partial<Vehicle>>(initialData);
 
   const loadBranches = async () => {
     try {
-      const data = await fetchBranches()
-      setBranches(data)
+      const data = await fetchBranches();
+      setBranches(data);
     } catch (error) {
-      console.error("Failed to load branches:", error)
+      console.error("Failed to load branches:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    loadBranches()
-  }, [])
+    loadBranches();
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    const numValue = value === "" ? null : Number(value)
-    setFormData((prev) => ({ ...prev, [name]: numValue }))
-  }
+    const { name, value } = e.target;
+    const numValue = value === "" ? null : Number(value);
+    setFormData((prev) => ({ ...prev, [name]: numValue }));
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      await onSubmit(formData)
+      await onSubmit(formData);
     } catch (error) {
-      console.error("Form submission error:", error)
-      setIsLoading(false)
+      console.error("Form submission error:", error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -80,7 +96,9 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
                 <Select
                   name="branch_id"
                   value={formData.branch_id || ""}
-                  onValueChange={(value) => handleSelectChange("branch_id", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("branch_id", value)
+                  }
                   required
                 >
                   <SelectTrigger id="branch_id">
@@ -124,7 +142,12 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
               {/* Make */}
               <div className="space-y-2">
                 <Label htmlFor="make">Make</Label>
-                <Input id="make" name="make" value={formData.make || ""} onChange={handleChange} />
+                <Input
+                  id="make"
+                  name="make"
+                  value={formData.make || ""}
+                  onChange={handleChange}
+                />
               </div>
 
               {/* Engine Model */}
@@ -141,7 +164,12 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
               {/* VIN */}
               <div className="space-y-2">
                 <Label htmlFor="vin">VIN</Label>
-                <Input id="vin" name="vin" value={formData.vin || ""} onChange={handleChange} />
+                <Input
+                  id="vin"
+                  name="vin"
+                  value={formData.vin || ""}
+                  onChange={handleChange}
+                />
               </div>
 
               {/* Manufacture Year */}
@@ -162,7 +190,9 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
                 <Select
                   name="vehicle_type"
                   value={formData.vehicle_type || ""}
-                  onValueChange={(value) => handleSelectChange("vehicle_type", value)}
+                  onValueChange={(value) =>
+                    handleSelectChange("vehicle_type", value)
+                  }
                 >
                   <SelectTrigger id="vehicle_type">
                     <SelectValue placeholder="Select vehicle type" />
@@ -184,16 +214,31 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
             {/* Notes */}
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
-              <Textarea id="notes" name="notes" value={formData.notes || ""} onChange={handleChange} rows={3} />
+              <Textarea
+                id="notes"
+                name="notes"
+                value={formData.notes || ""}
+                onChange={handleChange}
+                rows={3}
+              />
             </div>
           </div>
         </CardContent>
         <CardFooter className="flex justify-between border-t pt-4">
-          <Button type="button" variant="outline" onClick={() => router.push("/")} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push(returnPath)}
+            disabled={isLoading}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading} className="bg-brand-500 hover:bg-brand-600">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="bg-brand-500 hover:bg-brand-600"
+          >
             {isLoading ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -209,6 +254,5 @@ export default function VehicleForm({ initialData = {}, onSubmit, submitLabel }:
         </CardFooter>
       </Card>
     </form>
-  )
+  );
 }
-

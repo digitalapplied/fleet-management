@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { LayoutDashboard, Plus, Settings, Truck, Building, FileText, type LucideIcon } from "lucide-react"
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import {
+  LayoutDashboard,
+  Plus,
+  Settings,
+  Truck,
+  type LucideIcon,
+} from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,25 +16,21 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 interface NavItem {
-  title: string
-  url: string
-  icon: LucideIcon
-  badge?: number
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  exactMatch?: boolean;
 }
 
 const items: NavItem[] = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Vehicles",
+    title: "All Vehicles",
     url: "/dashboard",
     icon: Truck,
+    exactMatch: true,
   },
   {
     title: "Add Vehicle",
@@ -36,25 +38,23 @@ const items: NavItem[] = [
     icon: Plus,
   },
   {
-    title: "Branches",
-    url: "/settings",
-    icon: Building,
-  },
-  {
-    title: "Reports",
-    url: "/reports",
-    icon: FileText,
-    badge: 2,
-  },
-  {
     title: "Settings",
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function NavMain() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const branchId = searchParams.get("branchId");
+
+  const isActive = (item: NavItem): boolean => {
+    if (item.url === "/dashboard" && item.exactMatch) {
+      return pathname === item.url && !branchId;
+    }
+    return pathname.startsWith(item.url);
+  };
 
   return (
     <SidebarGroup>
@@ -63,15 +63,14 @@ export function NavMain() {
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive(item)}
+                tooltip={item.title}
+              >
                 <Link href={item.url}>
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
-                  {item.badge && (
-                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-xs font-medium text-brand-800">
-                      {item.badge}
-                    </span>
-                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -79,6 +78,5 @@ export function NavMain() {
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }
-
