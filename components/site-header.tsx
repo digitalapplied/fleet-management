@@ -50,9 +50,9 @@ export function SiteHeader() {
     );
   }
 
-  if (pathname.includes("/vehicles/add")) {
-    title = "Add Vehicle";
-    pageTitle = "Add Vehicle";
+  if (pathname.includes("/vehicles/new")) {
+    title = "Create Vehicle";
+    pageTitle = "Create Vehicle";
   } else if (pathname.includes("/settings")) {
     title = "Settings";
     pageTitle = "Settings";
@@ -60,7 +60,7 @@ export function SiteHeader() {
     title = "Dashboard";
   }
 
-  // Only show Add Vehicle button on the dashboard page
+  // Only show Create Vehicle button on the dashboard page
   const showAddButton = pathname === "/dashboard";
 
   return (
@@ -83,9 +83,12 @@ export function SiteHeader() {
         <div className="flex items-center gap-4">
           {showAddButton && (
             <Button asChild className="bg-brand-500 hover:bg-brand-600">
-              <Link href="/dashboard/vehicles/add" className="flex items-center gap-2">
+              <Link
+                href="/dashboard/vehicles/new"
+                className="flex items-center gap-2"
+              >
                 <Plus className="h-4 w-4" />
-                Add Vehicle
+                Create Vehicle
               </Link>
             </Button>
           )}

@@ -33,8 +33,8 @@ const items: NavItem[] = [
     exactMatch: true,
   },
   {
-    title: "Add Vehicle",
-    url: "/vehicles/add",
+    title: "Create Vehicle",
+    url: "/dashboard/vehicles/new",
     icon: Plus,
   },
   {

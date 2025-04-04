@@ -25,12 +25,12 @@ export function NavQuickActions() {
 
   const handleQuickAdd = (type: string) => {
     if (type === "vehicle") {
-      router.push("/dashboard/vehicles/add");
+      router.push("/dashboard/vehicles/new");
     } else {
       // For future quick actions
       toast({
         title: "Coming Soon",
-        description: `Quick add ${type} will be available in a future update.`,
+        description: `Quick create ${type} will be available in a future update.`,
         className: "bg-brand-50 border-brand-200 text-brand-700",
       });
     }
@@ -42,12 +42,12 @@ export function NavQuickActions() {
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Quick Add"
+              tooltip="Quick Create"
               className="min-w-8 bg-brand-500 text-white duration-200 ease-linear hover:bg-brand-600 hover:text-white active:bg-brand-600 active:text-white"
               onClick={() => handleQuickAdd("vehicle")}
             >
               <PlusCircleIcon />
-              <span>Quick Add</span>
+              <span>Quick Create</span>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -62,7 +62,7 @@ export function NavQuickActions() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleQuickAdd("vehicle")}>
-                  Add Vehicle
+                  Create Vehicle
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleQuickAdd("maintenance")}>
                   Log Maintenance

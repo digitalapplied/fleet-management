@@ -10,7 +10,7 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 
-export default function AddVehiclePage() {
+export default function CreateVehiclePage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +48,7 @@ export default function AddVehiclePage() {
       );
       toast({
         title: "Success",
-        description: "Vehicle added successfully",
+        description: "Vehicle created successfully",
         className: "bg-brand-50 border-brand-200 text-brand-700",
       });
 
@@ -58,9 +58,9 @@ export default function AddVehiclePage() {
       router.push(returnUrl);
       router.refresh();
     } catch (err) {
-      console.error("Failed to add vehicle:", err);
+      console.error("Failed to create vehicle:", err);
       const errorMessage =
-        err instanceof Error ? err.message : "Failed to add vehicle";
+        err instanceof Error ? err.message : "Failed to create vehicle";
       setError(errorMessage);
       toast({
         title: "Error",
@@ -75,7 +75,7 @@ export default function AddVehiclePage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-brand-700">
-          Add New Vehicle
+          Create New Vehicle
         </h1>
       </div>
 
@@ -88,7 +88,7 @@ export default function AddVehiclePage() {
       )}
 
       <Card className="border-brand-100">
-        <VehicleForm onSubmit={handleSubmit} submitLabel="Add Vehicle" />
+        <VehicleForm onSubmit={handleSubmit} submitLabel="Create Vehicle" />
       </Card>
     </div>
   );

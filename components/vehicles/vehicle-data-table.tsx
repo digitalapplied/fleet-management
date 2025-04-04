@@ -282,9 +282,9 @@ export function VehicleDataTable({
           filters or add a new vehicle.
         </p>
         <Button asChild className="mt-4 bg-brand-500 hover:bg-brand-600">
-          <Link href="/vehicles/add">
+          <Link href="/dashboard/vehicles/new">
             <Plus className="mr-2 h-4 w-4" />
-            Add Vehicle
+            Create Vehicle
           </Link>
         </Button>
       </div>
