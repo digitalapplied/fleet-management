@@ -1,131 +1,111 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation"; // Import useSearchParams
-import { getVehicleById, updateVehicle } from "@/lib/api";
-import VehicleForm from "@/components/vehicles/vehicle-form";
-import type { Vehicle } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState, Suspense } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { getVehicleById, fetchBranches } from "@/lib/api";
+import { VehicleForm } from "@/components/vehicles/vehicle-form";
+import type { Vehicle, Branch } from "@/lib/supabase";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function EditVehiclePage() {
-  const params = useParams();
-  const router = useRouter();
-  const searchParams = useSearchParams(); // Get search params
-  const currentBranchId = searchParams.get("branchId"); // Read branchId if present
-  const id = params.id as string;
+// Loading Skeleton for the form page (can be reused)
+const FormLoadingSkeleton = () => (
+  <div className="space-y-6">
+    <Skeleton className="h-8 w-1/3" /> {/* Title Skeleton */}
+    <Card className="border-brand-100">
+      <CardContent className="pt-6 space-y-6">
+        <Skeleton className="h-10 w-1/2" /> {/* Branch Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-1/4" /> {/* Label */}
+              <Skeleton className="h-10 w-full" /> {/* Input */}
+            </div>
+          ))}
+        </div>
+        <h3 className="text-lg font-medium pt-4 border-t">
+          <Skeleton className="h-6 w-1/4" />
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={`tech-${i}`} className="space-y-2">
+              <Skeleton className="h-4 w-1/4" /> {/* Label */}
+              <Skeleton className="h-10 w-full" /> {/* Input */}
+            </div>
+          ))}
+        </div>
+        <div className="pt-4 border-t space-y-2">
+          <Skeleton className="h-4 w-1/4" /> {/* Label */}
+          <Skeleton className="h-24 w-full" /> {/* Textarea */}
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between border-t pt-4 pb-4 px-6">
+        <Skeleton className="h-10 w-24" /> {/* Cancel Button */}
+        <Skeleton className="h-10 w-32" /> {/* Submit Button */}
+      </CardFooter>
+    </Card>
+  </div>
+);
+
+// Main Content Component
+function EditVehicleContent({ id }: { id: string }) {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const loadVehicle = async () => {
-      setLoading(true); // Ensure loading state is set
-      setError(null); // Reset error on load
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const data = await getVehicleById(id);
-        setVehicle(data);
-      } catch (error) {
-        console.error("Failed to load vehicle:", error);
-        setError("Failed to load vehicle details");
+        // Fetch both vehicle and branches in parallel
+        const [vehicleData, branchesData] = await Promise.all([
+          getVehicleById(id),
+          fetchBranches(),
+        ]);
+
+        if (!vehicleData) {
+          throw new Error("Vehicle not found.");
+        }
+
+        setVehicle(vehicleData);
+        setBranches(branchesData);
+      } catch (err) {
+        console.error("Failed to load data:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load vehicle details"
+        );
       } finally {
         setLoading(false);
       }
     };
 
     if (id) {
-      loadVehicle();
+      loadData();
     } else {
-      setError("Vehicle ID is missing");
+      setError("Vehicle ID is missing.");
       setLoading(false);
     }
   }, [id]);
 
-  const handleSubmit = async (
-    data: Partial<Vehicle>
-  ): Promise<boolean | void> => {
-    try {
-      await updateVehicle(id, data);
-      toast({
-        title: "Success",
-        description: "Vehicle updated successfully",
-        className: "bg-brand-50 border-brand-200 text-brand-700",
-      });
-
-      // --- UPDATE RETURN LOGIC ---
-      const returnUrl = currentBranchId
-        ? `/dashboard?branchId=${currentBranchId}`
-        : "/dashboard";
-      router.push(returnUrl);
-      router.refresh(); // Ensure data re-fetches on the dashboard page
-    } catch (err) {
-      // ... existing code ...
-      return false;
-    }
-  };
-
-  // Loading Skeleton
-  const LoadingSkeleton = () => (
-    <div className="container mx-auto py-6 space-y-6">
-      <Skeleton className="h-8 w-1/4" />
-      <Card className="border-brand-100">
-        <div className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-          <Skeleton className="h-24 w-full" />
-        </div>
-        <div className="flex justify-between border-t p-4">
-          <Skeleton className="h-10 w-24" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-      </Card>
-    </div>
-  );
-
   if (loading) {
-    return <LoadingSkeleton />;
+    return <FormLoadingSkeleton />;
   }
 
-  if (error && !vehicle) {
-    // Show specific error if vehicle loading failed
+  if (error || !vehicle) {
     return (
-      <div className="container mx-auto py-6">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="bg-destructive/10 text-destructive p-3 rounded-full mb-3">
-            <AlertCircle className="h-6 w-6" />
-          </div>
-          <h3 className="text-lg font-medium text-destructive mb-1">
-            Error Loading Vehicle
-          </h3>
-          <p className="text-muted-foreground max-w-md">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!vehicle) {
-    // Generic not found after loading (should ideally not happen if ID is valid)
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="bg-destructive/10 text-destructive p-3 rounded-full mb-3">
-            <AlertCircle className="h-6 w-6" />
-          </div>
-          <h3 className="text-lg font-medium text-destructive mb-1">
-            Vehicle not found
-          </h3>
-          <p className="text-muted-foreground max-w-md">
-            The vehicle you're looking for could not be found. It may have been
-            deleted or the ID is incorrect.
-          </p>
-        </div>
+      <div className="container mx-auto py-6 space-y-6">
+        <h1 className="text-2xl font-semibold text-brand-700">Edit Vehicle</h1>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Loading Vehicle</AlertTitle>
+          <AlertDescription>
+            {error || "The vehicle could not be found or loaded."}
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -133,27 +113,28 @@ export default function EditVehiclePage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-brand-700">Edit Vehicle</h1>
+        <h1 className="text-2xl font-semibold text-brand-700">
+          Edit Vehicle{" "}
+          <span className="text-muted-foreground font-normal">
+            ({vehicle.fleet_number})
+          </span>
+        </h1>
       </div>
 
-      {error && ( // Display submission errors separately
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <Card className="border-brand-100">
-        {/* Pass the currentBranchId if needed, or handle return here */}
-        <VehicleForm
-          initialData={vehicle}
-          onSubmit={handleSubmit}
-          submitLabel="Save Changes"
-          // Remove returnPath prop if handling return here
-          // returnPath="/dashboard" // Or adjust based on logic
-        />
-      </Card>
+      {/* Render the updated form, passing vehicle and branches */}
+      <VehicleForm vehicle={vehicle} branches={branches} />
     </div>
+  );
+}
+
+// Page Component using Suspense
+export default function EditVehiclePage() {
+  const params = useParams();
+  const id = params.id as string;
+
+  return (
+    <Suspense fallback={<FormLoadingSkeleton />}>
+      <EditVehicleContent id={id} />
+    </Suspense>
   );
 }
