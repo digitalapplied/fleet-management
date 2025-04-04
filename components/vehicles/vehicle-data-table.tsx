@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -12,7 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 import {
   AlertCircle,
   Building,
@@ -27,12 +27,12 @@ import {
   Plus,
   Search,
   Trash2,
-} from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,50 +40,72 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import DeleteConfirmDialog from "./delete-confirm-dialog"
-import type { Vehicle } from "@/lib/supabase"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import DeleteConfirmDialog from "./delete-confirm-dialog";
+import type { Vehicle } from "@/lib/supabase";
 
 interface VehicleDataTableProps {
-  data: Vehicle[]
-  onDelete: (id: string) => Promise<void>
-  loading?: boolean
+  data: Vehicle[];
+  onDelete: (id: string) => Promise<void>;
+  loading?: boolean;
 }
 
-export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDataTableProps) {
-  const router = useRouter()
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [vehicleToDelete, setVehicleToDelete] = React.useState<Vehicle | null>(null)
-  const [isDeleting, setIsDeleting] = React.useState(false)
+export function VehicleDataTable({
+  data,
+  onDelete,
+  loading = false,
+}: VehicleDataTableProps) {
+  const router = useRouter();
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [vehicleToDelete, setVehicleToDelete] = React.useState<Vehicle | null>(
+    null
+  );
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
-  })
-  const [globalFilter, setGlobalFilter] = React.useState("")
+  });
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   // Function to get status badge color
   const getStatusBadgeClass = (status: string | null) => {
-    if (!status) return "bg-gray-100 text-gray-800"
+    if (!status) return "bg-gray-100 text-gray-800";
 
     switch (status.toLowerCase()) {
       case "active":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "maintenance":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       case "out of service":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "reserved":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const columns: ColumnDef<Vehicle>[] = [
     {
@@ -91,8 +113,13 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
       header: ({ table }) => (
         <div className="flex items-center justify-center">
           <Checkbox
-            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
             aria-label="Select all"
           />
         </div>
@@ -112,12 +139,16 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
     {
       accessorKey: "fleet_number",
       header: "Fleet #",
-      cell: ({ row }) => <div className="font-medium">{row.getValue("fleet_number")}</div>,
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("fleet_number")}</div>
+      ),
     },
     {
       accessorKey: "registration_number",
       header: "Registration",
-      cell: ({ row }) => <div>{row.getValue("registration_number") || "-"}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue("registration_number") || "-"}</div>
+      ),
     },
     {
       accessorKey: "make",
@@ -149,7 +180,7 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
     {
       id: "actions",
       cell: ({ row }) => {
-        const vehicle = row.original
+        const vehicle = row.original;
 
         return (
           <div className="flex justify-end gap-2">
@@ -162,7 +193,10 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href={`/vehicles/${vehicle.id}/edit`} className="flex items-center">
+                  <Link
+                    href={`/dashboard/vehicles/${vehicle.id}/edit`}
+                    className="flex items-center"
+                  >
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit
                   </Link>
@@ -178,10 +212,10 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        )
+        );
       },
     },
-  ]
+  ];
 
   const table = useReactTable({
     data,
@@ -204,21 +238,21 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
       globalFilter,
     },
     onGlobalFilterChange: setGlobalFilter,
-  })
+  });
 
   const handleDelete = async () => {
-    if (!vehicleToDelete) return
+    if (!vehicleToDelete) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await onDelete(vehicleToDelete.id)
+      await onDelete(vehicleToDelete.id);
     } catch (error) {
-      console.error("Failed to delete vehicle:", error)
+      console.error("Failed to delete vehicle:", error);
     } finally {
-      setIsDeleting(false)
-      setVehicleToDelete(null)
+      setIsDeleting(false);
+      setVehicleToDelete(null);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -226,10 +260,12 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
         <div className="flex flex-col items-center gap-2">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
           <p className="text-muted-foreground">Loading vehicles...</p>
-          <p className="text-xs text-muted-foreground">This may take a moment...</p>
+          <p className="text-xs text-muted-foreground">
+            This may take a moment...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (data.length === 0) {
@@ -238,9 +274,12 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
         <div className="bg-brand-50 text-brand-500 p-3 rounded-full mb-3">
           <AlertCircle className="h-6 w-6" />
         </div>
-        <h3 className="text-lg font-medium text-brand-700 mb-1">No vehicles found</h3>
+        <h3 className="text-lg font-medium text-brand-700 mb-1">
+          No vehicles found
+        </h3>
         <p className="text-muted-foreground max-w-md">
-          There are no vehicles matching your criteria. Try adjusting your filters or add a new vehicle.
+          There are no vehicles matching your criteria. Try adjusting your
+          filters or add a new vehicle.
         </p>
         <Button asChild className="mt-4 bg-brand-500 hover:bg-brand-600">
           <Link href="/vehicles/add">
@@ -249,7 +288,7 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
           </Link>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -288,11 +327,13 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
                       {column.id === "branch.name" ? "Branch" : column.id}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -306,9 +347,14 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -316,15 +362,26 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -334,8 +391,8 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-          selected.
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
@@ -343,11 +400,13 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
-                table.setPageSize(Number(value))
+                table.setPageSize(Number(value));
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -359,7 +418,8 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
             </Select>
           </div>
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -410,6 +470,5 @@ export function VehicleDataTable({ data, onDelete, loading = false }: VehicleDat
         onCancel={() => setVehicleToDelete(null)}
       />
     </div>
-  )
+  );
 }
-

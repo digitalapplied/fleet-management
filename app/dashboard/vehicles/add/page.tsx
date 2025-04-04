@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { addVehicle } from "@/lib/api";
 import VehicleForm from "@/components/vehicles/vehicle-form";
 import type { Vehicle } from "@/lib/supabase";
@@ -13,6 +13,8 @@ import { Card } from "@/components/ui/card";
 export default function AddVehiclePage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentBranchId = searchParams.get("branchId");
   const { toast } = useToast();
 
   const handleSubmit = async (
@@ -49,7 +51,12 @@ export default function AddVehiclePage() {
         description: "Vehicle added successfully",
         className: "bg-brand-50 border-brand-200 text-brand-700",
       });
-      router.push("/dashboard");
+
+      const returnUrl = currentBranchId
+        ? `/dashboard?branchId=${currentBranchId}`
+        : "/dashboard";
+      router.push(returnUrl);
+      router.refresh();
     } catch (err) {
       console.error("Failed to add vehicle:", err);
       const errorMessage =
@@ -81,11 +88,7 @@ export default function AddVehiclePage() {
       )}
 
       <Card className="border-brand-100">
-        <VehicleForm
-          onSubmit={handleSubmit}
-          submitLabel="Add Vehicle"
-          returnPath="/dashboard"
-        />
+        <VehicleForm onSubmit={handleSubmit} submitLabel="Add Vehicle" />
       </Card>
     </div>
   );

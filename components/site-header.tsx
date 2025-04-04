@@ -83,7 +83,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-4">
           {showAddButton && (
             <Button asChild className="bg-brand-500 hover:bg-brand-600">
-              <Link href="/vehicles/add" className="flex items-center gap-2">
+              <Link href="/dashboard/vehicles/add" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Vehicle
               </Link>

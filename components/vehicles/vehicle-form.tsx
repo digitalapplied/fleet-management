@@ -24,14 +24,12 @@ interface VehicleFormProps {
   initialData?: Partial<Vehicle>;
   onSubmit: (data: Partial<Vehicle>) => Promise<boolean | void>;
   submitLabel: string;
-  returnPath?: string;
 }
 
 export default function VehicleForm({
   initialData = {},
   onSubmit,
   submitLabel,
-  returnPath = "/dashboard",
 }: VehicleFormProps) {
   const router = useRouter();
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -78,6 +76,7 @@ export default function VehicleForm({
       await onSubmit(formData);
     } catch (error) {
       console.error("Form submission error:", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -228,7 +227,7 @@ export default function VehicleForm({
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push(returnPath)}
+            onClick={() => router.back()}
             disabled={isLoading}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

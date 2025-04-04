@@ -1,35 +1,40 @@
-"use client"
+"use client";
 
-import { PlusCircleIcon, TruckIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { PlusCircleIcon, TruckIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 export function NavQuickActions() {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { toast } = useToast();
 
   const handleQuickAdd = (type: string) => {
     if (type === "vehicle") {
-      router.push("/vehicles/add")
+      router.push("/dashboard/vehicles/add");
     } else {
       // For future quick actions
       toast({
         title: "Coming Soon",
         description: `Quick add ${type} will be available in a future update.`,
         className: "bg-brand-50 border-brand-200 text-brand-700",
-      })
+      });
     }
-  }
+  };
 
   return (
     <SidebarGroup>
@@ -56,15 +61,20 @@ export function NavQuickActions() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleQuickAdd("vehicle")}>Add Vehicle</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleQuickAdd("maintenance")}>Log Maintenance</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleQuickAdd("branch")}>Add Branch</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleQuickAdd("vehicle")}>
+                  Add Vehicle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleQuickAdd("maintenance")}>
+                  Log Maintenance
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleQuickAdd("branch")}>
+                  Add Branch
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }
-
