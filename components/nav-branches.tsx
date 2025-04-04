@@ -20,9 +20,15 @@ export function NavBranches() {
   const searchParams = useSearchParams();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isBranchMenuOpen, setIsBranchMenuOpen] = useState(true);
   const currentBranchId = searchParams.get("branchId");
+
+  // Set isMounted to true after initial client-side render
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const loadBranches = async () => {
@@ -72,11 +78,19 @@ export function NavBranches() {
       {isBranchMenuOpen && (
         <SidebarMenu className="ml-3 mt-1">
           {loading ? (
-            Array.from({ length: 3 }).map((_, index) => (
-              <SidebarMenuItem key={`skeleton-${index}`}>
-                <SidebarMenuSkeleton showIcon />
-              </SidebarMenuItem>
-            ))
+            // Only render skeletons if mounted (client-side)
+            isMounted ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <SidebarMenuItem key={`skeleton-${index}`}>
+                  <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+              ))
+            ) : (
+              // Render minimal placeholders during SSR/hydration
+              Array.from({ length: 3 }).map((_, index) => (
+                <li key={`placeholder-${index}`} className="h-8" />
+              ))
+            )
           ) : error ? (
             <SidebarMenuItem>
               <SidebarMenuButton className="text-destructive text-xs" disabled>
