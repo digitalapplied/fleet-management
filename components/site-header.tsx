@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Building, Plus } from "lucide-react";
+import { Building, Plus, Settings as SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchBranches } from "@/lib/api";
@@ -28,9 +28,12 @@ export function SiteHeader() {
         const branch = branches.find((b) => b.id === branchId);
         if (branch) {
           setBranchName(branch.name);
+        } else {
+          setBranchName("Unknown Branch"); // Handle case where branch ID is invalid
         }
       } catch (error) {
         console.error("Failed to fetch branch name:", error);
+        setBranchName("Error Loading Branch");
       }
     };
 
@@ -38,29 +41,37 @@ export function SiteHeader() {
   }, [branchId]);
 
   // Determine the title based on the current path and branch
-  let title = "Dashboard";
-  let pageTitle: React.ReactNode = "All Vehicles";
+  let title = "Dashboard"; // Default title
+  let pageTitle: React.ReactNode | null = null; // Page specific title/context
 
-  if (branchId && branchName) {
-    pageTitle = (
-      <div className="flex items-center gap-2">
-        <Building className="h-4 w-4" />
-        <span>{branchName} Vehicles</span>
-      </div>
-    );
-  }
-
-  if (pathname.includes("/vehicles/new")) {
-    title = "Create Vehicle";
-    pageTitle = "Create Vehicle";
-  } else if (pathname.includes("/settings")) {
-    title = "Settings";
-    pageTitle = "Settings";
-  } else if (pathname.includes("/dashboard")) {
+  if (pathname === "/dashboard") {
     title = "Dashboard";
+    if (branchId && branchName) {
+      pageTitle = (
+        <div className="flex items-center gap-2">
+          <Building className="h-4 w-4 text-brand-600" />
+          <span>{branchName} Vehicles</span>
+        </div>
+      );
+    } else {
+      pageTitle = "All Vehicles";
+    }
+  } else if (pathname.startsWith("/dashboard/vehicles/new")) {
+    title = "Vehicles";
+    pageTitle = "Create New Vehicle";
+  } else if (
+    pathname.startsWith("/dashboard/vehicles/") &&
+    pathname.endsWith("/edit")
+  ) {
+    title = "Vehicles";
+    pageTitle = "Edit Vehicle";
+  } else if (pathname.startsWith("/dashboard/settings")) {
+    title = "Settings"; // Set main title for settings section
+    pageTitle = null; // No specific subtitle needed here, the page content handles sections
   }
+  // Add more conditions here for other dashboard sections if needed
 
-  // Only show Create Vehicle button on the dashboard page
+  // Only show Create Vehicle button on the main dashboard or branch vehicle views
   const showAddButton = pathname === "/dashboard";
 
   return (
@@ -70,10 +81,10 @@ export function SiteHeader() {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mx-2 h-6" />
           <h1 className="text-xl font-semibold">{title}</h1>
-          {pathname === "/dashboard" && (
+          {pageTitle && ( // Only show pageTitle if it's set
             <>
               <Separator orientation="vertical" className="mx-2 h-6" />
-              <h2 className="text-xl font-semibold text-brand-700">
+              <h2 className="text-lg font-medium text-brand-700">
                 {pageTitle}
               </h2>
             </>
