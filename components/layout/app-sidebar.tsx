@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { NavUser } from "@/components/nav-user";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   branchNav?: React.ReactNode;
@@ -49,9 +50,13 @@ export function AppSidebar({ branchNav, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="p-4 text-xs text-muted-foreground">
-          Fleet Management System v1.0
-        </div>
+        <NavUser
+          user={{
+            name: "Admin User",
+            email: "admin@example.com",
+            avatar: "",
+          }}
+        />
       </SidebarFooter>
     </Sidebar>
   );

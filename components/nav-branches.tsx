@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Building, ChevronDown, ChevronRight } from "lucide-react";
+import { Building } from "lucide-react";
 
 import {
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,55 +21,20 @@ interface NavBranchesProps {
 export function NavBranches({ items: branches }: NavBranchesProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isBranchMenuOpen, setIsBranchMenuOpen] = useState(true);
   const currentBranchId = searchParams.get("branchId");
 
   return (
     <SidebarGroup>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={() => setIsBranchMenuOpen(!isBranchMenuOpen)}
-            className="w-full justify-between font-semibold"
-            aria-expanded={isBranchMenuOpen}
-          >
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4" />
-              <span>Branches</span>
-            </div>
-            {isBranchMenuOpen ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-
-      {isBranchMenuOpen && (
-        <SidebarMenu className="ml-3 mt-1">
+      <SidebarGroupLabel>Branches</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu className="mt-1">
           <>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                tooltip="All Branches"
-                isActive={!currentBranchId && pathname === "/dashboard"}
-                size="sm"
-              >
-                <Link href="/dashboard">
-                  <Building className="h-4 w-4" />
-                  <span>All Branches</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
             {branches.map((branch) => (
               <SidebarMenuItem key={branch.id}>
                 <SidebarMenuButton
                   asChild
                   tooltip={branch.name}
                   isActive={currentBranchId === branch.id}
-                  size="sm"
                 >
                   <Link href={`/dashboard?branchId=${branch.id}`}>
                     <Building className="h-4 w-4" />
@@ -87,7 +53,7 @@ export function NavBranches({ items: branches }: NavBranchesProps) {
             </SidebarMenuItem>
           )}
         </SidebarMenu>
-      )}
+      </SidebarGroupContent>
     </SidebarGroup>
   );
 }
