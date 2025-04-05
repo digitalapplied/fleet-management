@@ -1,6 +1,7 @@
 "use client";
 
 import { PlusCircleIcon, TruckIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -17,23 +18,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export function NavQuickActions() {
   const router = useRouter();
-  const { toast } = useToast();
 
-  const handleQuickAdd = (type: string) => {
-    if (type === "vehicle") {
-      router.push("/dashboard/vehicles/new");
-    } else {
-      // For future quick actions
-      toast({
-        title: "Coming Soon",
-        description: `Quick create ${type} will be available in a future update.`,
-        className: "bg-brand-50 border-brand-200 text-brand-700",
-      });
-    }
+  const handleOtherQuickAdd = (type: string) => {
+    toast.info("Coming Soon", {
+      description: `Quick create ${type} will be available in a future update.`,
+    });
   };
 
   return (
@@ -42,12 +35,14 @@ export function NavQuickActions() {
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Quick Create"
+              tooltip="Quick Create Vehicle"
               className="min-w-8 bg-brand-500 text-white duration-200 ease-linear hover:bg-brand-600 hover:text-white active:bg-brand-600 active:text-white"
-              onClick={() => handleQuickAdd("vehicle")}
+              asChild
             >
-              <PlusCircleIcon />
-              <span>Quick Create</span>
+              <Link href="/dashboard/vehicles/new">
+                <PlusCircleIcon />
+                <span>Quick Create</span>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -61,14 +56,16 @@ export function NavQuickActions() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleQuickAdd("vehicle")}>
-                  Create Vehicle
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/vehicles/new">Create Vehicle</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleQuickAdd("maintenance")}>
+                <DropdownMenuItem
+                  onClick={() => handleOtherQuickAdd("maintenance")}
+                >
                   Log Maintenance
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleQuickAdd("branch")}>
-                  Add Branch
+                <DropdownMenuItem onClick={() => handleOtherQuickAdd("branch")}>
+                  Add Branch (Soon)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
